@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Company Selection Wheel</title>
+  <link rel="icon" type="image/svg+xml" href="https://www.fedkiit.com/assets/logo-Cjn2Qjde.svg" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --primary: linear-gradient(260deg, rgba(255, 190, 11, 0.84) -29.7%, rgba(244, 43, 3, 0.84) 128.34%);
+      --primary-solid: #ffb347;
+      --primary-dark: #ff8c00;
+      --bg-dark: #2C2B2B;
+      --card-bg: rgba(30, 30, 30, 0.8);
+      --text: #e0e0e0;
+      --text-secondary: #aaa;
+      --hover: rgba(255, 190, 11, 0.1);
+      --header-bg: #1a1a1a;
+    }
+
+    body {
+      font-family: 'Inter', 'Segoe UI', sans-serif;
+      background-color: var(--bg-dark);
+      margin: 0;
+      padding: 30px 20px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: var(--text);
+      line-height: 1.6;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Modern decorative circles */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 50%;
+      left: -150px;
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(255, 179, 71, 0.08) 0%, transparent 70%);
+      border-radius: 50%;
+      z-index: -1;
+      transform: translateY(-50%);
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      top: 50%;
+      right: -200px;
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(255, 140, 0, 0.06) 0%, transparent 70%);
+      border-radius: 50%;
+      z-index: -1;
+      transform: translateY(-50%);
+    }
+
+    .header-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .logo {
+      width: 80px;
+      height: 80px;
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      background: var(--primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
+      letter-spacing: -0.5px;
+    }
+
+    p.subtitle {
+      font-size: 1.1rem;
+      color: var(--text-secondary);
+      margin-bottom: 30px;
+      text-align: center;
+      max-width: 600px;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: var(--card-bg);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      padding: 32px;
+      border-radius: 24px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      max-width: 720px;
+      width: 100%;
+      border: 1px solid var(--border);
+    }
+
+    /* Searchable Dropdown */
+    .select-container {
+      position: relative;
+      width: 40rem; 
+      
+      margin: 12px 0;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 14px 18px;
+      border-radius: 12px;
+      background: rgba(50, 50, 50, 0.8);
+      color: white;
+      font-size: 16px;
+      outline: none;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+   
+
+    .options-list {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      max-height: 200px;
+      overflow-y: auto;
+      background: var(--header-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      margin-top: 4px;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+      z-index: 10;
+      display: none;
+    }
+
+    .option-item {
+      padding: 12px 16px;
+      cursor: pointer;
+      color: var(--text);
+      transition: background 0.2s ease;
+    }
+
+    .option-item:hover {
+      background: var(--hover);
+    }
+
+    canvas {
+      border-radius: 50%;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+      margin: 25px 0;
+      border: 4px solid #1a1a1a;
+      background: #1a1a1a;
+    }
+
+    .button-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      width: 100%;
+    }
+
+    button {
+      padding: 14px 18px;
+      border-radius: 12px;
+      border: none;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      width: 100%;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    
+    #spinBtn {
+        grid-column: 1 / -1; /* Make spin button span both columns */
+    }
+
+    button.primary {
+      background: var(--primary);
+      color: #111;
+    }
+
+    button.secondary {
+      background: rgba(60, 60, 60, 0.7);
+      color: var(--text);
+      margin-top: 10px;
+
+    }
+
+    button:hover:not(:disabled) {
+      transform: translateY(-2px);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .result {
+      font-size: 1.4rem;
+      margin-top: 20px;
+      color: var(--primary);
+      font-weight: 600;
+      text-align: center;
+      min-height: 32px;
+      padding: 8px 0;
+    }
+
+    table {
+      margin-top: 25px;
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 15px;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    th, td {
+      padding: 14px;
+      text-align: center;
+    }
+
+    th {
+      background: var(--primary);
+      color: #111;
+      font-weight: 700;
+    }
+
+    tbody tr:nth-child(even) {
+      background-color: rgba(255, 179, 71, 0.06);
+    }
+
+    tbody tr:hover {
+      background-color: var(--hover);
+    }
+
+    td {
+      color: var(--text);
+    }
+    
+    /* --- NEW: Shake animation for validation --- */
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+      20%, 40%, 60%, 80% { transform: translateX(5px); }
+    }
+    .shake {
+        animation: shake 0.5s ease-in-out;
+    }
+
+    /* Popup Styles */
+    .popup-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(5px);
+      display: none;
+      z-index: 1000;
+      animation: fadeIn 0.3s ease-out;
+      overflow-y: auto;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    .popup-modal {
+      position: relative;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 24px;
+      max-width: 350px;
+      width: 100%;
+      max-height: 80vh;
+      text-align: center;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+      animation: slideIn 0.4s ease-out;
+      margin: auto;
+    }
+
+    .popup-header {
+      margin-bottom: 20px;
+    }
+
+    .popup-icon {
+      font-size: 3rem;
+      margin-bottom: 12px;
+    }
+
+    .popup-header h3 {
+      background: var(--primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin: 0;
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+
+    .popup-content {
+      margin-bottom: 24px;
+    }
+
+    .popup-content p {
+      margin: 8px 0;
+      color: var(--text);
+      font-size: 1.1rem;
+    }
+
+    .popup-company {
+      background: var(--primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-size: 1.3rem !important;
+      margin-top: 12px !important;
+    }
+
+    .popup-close {
+      background: var(--primary);
+      color: #111;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      width: 100%;
+    }
+
+    .popup-close:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(255, 179, 71, 0.3);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.9);
+      }
+      to {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+      }
+    }
+
+    @keyframes fadeInOut {
+      0%, 100% { opacity: 0; transform: translateY(-10px); }
+      20%, 80% { opacity: 1; transform: translateY(0); }
+    }
+
+
+    @media (max-width: 600px) {
+      .logo {
+        width: 60px;
+        height: 60px;
+        margin-bottom: 12px;
+      }
+      h1 { font-size: 2.1rem; }
+      .container { padding: 20px; }
+      canvas { width: 300px; height: 300px; }
+      .search-input, button { font-size: 15px; }
+      .result { font-size: 1.2rem; }
+      .button-group { grid-template-columns: 1fr; }
+      
+      .popup-modal {
+        width: 95%;
+        padding: 20px;
+        margin: 10px;
+        max-height: 70vh;
+        top: 40%;
+      }
+      
+      .popup-overlay {
+        padding: 10px;
+      }
+      
+      .popup-header h3 {
+        font-size: 1.3rem;
+      }
+      
+      .popup-content p {
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header-section">
+    <img src="https://www.fedkiit.com/assets/logo-Cjn2Qjde.svg" alt="FED KIIT Logo" class="logo" />
+    <h1>Company Selection Wheel</h1>
+    <p class="subtitle">Assign teams to companies - Max 10 teams per company</p>
+  </div>
+
+  <div class="container">
+    <div class="select-container">
+      <input
+        type="text"
+        class="search-input"
+        placeholder="Search or select a team..."
+        id="teamSearch"
+      />
+      <div class="options-list" id="teamOptions"></div>
+    </div>
+
+    <canvas id="wheel" width="400" height="400"></canvas>
+    
+    <button class="primary" id="spinBtn">Spin for Selected Team</button>
+    
+    <div class="button-group">
+      <button class="secondary" id="exportBtn">Export CSV</button>
+      <button class="secondary" id="resetBtn">Reset All</button>
+    </div>
+
+    <div class="result" id="result"></div>
+
+    <!-- Assignment Success Popup -->
+    <div class="popup-overlay" id="popupOverlay">
+      <div class="popup-modal">
+        <div class="popup-header">
+          <div class="popup-icon">🎉</div>
+          <h3>Assignment Complete!</h3>
+        </div>
+        <div class="popup-content">
+          <p><strong id="popupTeamName"></strong> has been assigned to</p>
+          <p class="popup-company"><strong id="popupCompanyName"></strong></p>
+        </div>
+        <button class="popup-close" id="popupClose">Continue</button>
+      </div>
+    </div>
+
+    <h3 style="margin-top: 30px; margin-bottom: 15px; text-align: center; background: var(--primary); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Team Assignments</h3>
+    <table id="teamAssignmentTable">
+      <thead>
+        <tr>
+          <th>Team</th>
+          <th>Assigned Company</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <h3 style="margin-top: 30px; margin-bottom: 15px; text-align: center; background: var(--primary); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Company Slots</h3>
+    <table id="assignmentTable">
+      <thead>
+        <tr>
+          <th>Company</th>
+          <th>Teams Assigned</th>
+          <th>Available Slots</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <script>
+    const companies = [
+      "Trigger.dev", "Airbnb", "BigBasket", "BRex", "First Cry",
+      "Acko Drive", "Khatabook", "Leverage Edu", "1mg", "FamPay"
+    ];
+
+    // More sample teams for better testing
+    const defaultTeams = [
+      { name: "Team Wizards", assigned: null }, { name: "Team ProTips", assigned: null },
+      { name: "Team Innovators", assigned: null }, { name: "Team Visionaries", assigned: null },
+      { name: "Team Trailblazers", assigned: null }, { name: "Alpha Squad", assigned: null },
+      { name: "Beta Brigade", assigned: null }, { name: "Gamma Force", assigned: null },
+      { name: "Delta Unit", assigned: null }, { name: "Omega Crew", assigned: null }
+    ];
+
+    const maxTeamsPerCompany = 10;
+    
+    // Load data from localStorage
+    function loadFromLocalStorage() {
+      const savedTeams = localStorage.getItem('wheelTeams');
+      const savedAssignmentCount = localStorage.getItem('wheelAssignmentCount');
+      
+      if (savedTeams) {
+        teams = JSON.parse(savedTeams);
+      } else {
+        teams = [...defaultTeams];
+      }
+      
+      if (savedAssignmentCount) {
+        assignmentCount = JSON.parse(savedAssignmentCount);
+      } else {
+        assignmentCount = {};
+        companies.forEach(c => assignmentCount[c] = 0);
+      }
+    }
+    
+    // Save data to localStorage
+    function saveToLocalStorage() {
+      localStorage.setItem('wheelTeams', JSON.stringify(teams));
+      localStorage.setItem('wheelAssignmentCount', JSON.stringify(assignmentCount));
+      
+      // Show a small save indicator
+      const saveIndicator = document.createElement('div');
+      saveIndicator.textContent = '💾 Saved';
+      saveIndicator.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: rgba(0, 0, 0, 0.8);
+        color: #51cf66;
+        padding: 8px 12px;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 600;
+        z-index: 1001;
+        animation: fadeInOut 2s ease-in-out;
+      `;
+      document.body.appendChild(saveIndicator);
+      
+      setTimeout(() => {
+        document.body.removeChild(saveIndicator);
+      }, 2000);
+    }
+    
+    // Initialize variables
+    let teams = [];
+    let assignmentCount = {};
+
+    const canvas = document.getElementById("wheel");
+    const ctx = canvas.getContext("2d");
+    const teamSearchInput = document.getElementById("teamSearch");
+    const teamOptions = document.getElementById("teamOptions");
+    const resultDiv = document.getElementById("result");
+    const spinBtn = document.getElementById("spinBtn");
+    const popupOverlay = document.getElementById("popupOverlay");
+    const popupTeamName = document.getElementById("popupTeamName");
+    const popupCompanyName = document.getElementById("popupCompanyName");
+    const popupClose = document.getElementById("popupClose");
+    
+    let startAngle = 0;
+    const arc = Math.PI * 2 / companies.length;
+    let spinTimeout = null;
+    let spinAngleStart = 0;
+    let spinTime = 0;
+    let spinTimeTotal = 0;
+    let selectedTeam = null;
+
+    const colors = [
+      "#ffb347", "#ffcc66", "#ff9933", "#ff8000", "#e67300",
+      "#ffaa22", "#ffbb55", "#ff944d", "#ff751a", "#e66b00"
+    ];
+
+    function initializeAssignments() {
+        companies.forEach(c => assignmentCount[c] = 0);
+    }
+
+    function populateTeamDropdown() {
+      teamOptions.innerHTML = '';
+      const unassignedTeams = teams.filter(team => !team.assigned);
+
+      if (unassignedTeams.length === 0) {
+        teamSearchInput.placeholder = "All teams assigned!";
+        teamSearchInput.disabled = true;
+        return;
+      }
+
+      unassignedTeams.forEach(team => {
+        const option = document.createElement("div");
+        option.className = "option-item";
+        option.textContent = team.name;
+        option.addEventListener('click', () => {
+          teamSearchInput.value = team.name;
+          selectedTeam = team.name;
+          teamOptions.style.display = 'none';
+        });
+        teamOptions.appendChild(option);
+      });
+      teamSearchInput.disabled = false;
+      teamSearchInput.placeholder = "🔍 Search or select a team...";
+    }
+
+    // --- NEW: Filter functionality ---
+    function filterTeams() {
+        const filter = teamSearchInput.value.toLowerCase();
+        const items = teamOptions.getElementsByClassName("option-item");
+        let hasVisibleItems = false;
+        for (let i = 0; i < items.length; i++) {
+            const txtValue = items[i].textContent || items[i].innerText;
+            if (txtValue.toLowerCase().indexOf(filter) > -1) {
+                items[i].style.display = "";
+                hasVisibleItems = true;
+            } else {
+                items[i].style.display = "none";
+            }
+        }
+        // Show dropdown if there are matching items, otherwise hide it
+        teamOptions.style.display = hasVisibleItems ? 'block' : 'none';
+    }
+
+    // --- EVENT LISTENERS ---
+    teamSearchInput.addEventListener("input", filterTeams);
+    teamSearchInput.addEventListener("click", () => {
+        if (!teamSearchInput.disabled) {
+            populateTeamDropdown(); // Repopulate to show full list on click
+            teamOptions.style.display = 'block';
+        }
+    });
+
+    document.addEventListener("click", (e) => {
+      if (!teamSearchInput.contains(e.target) && !teamOptions.contains(e.target)) {
+        teamOptions.style.display = 'none';
+      }
+    });
+    
+    spinBtn.addEventListener('click', spinWheel);
+    document.getElementById('exportBtn').addEventListener('click', exportToCSV);
+    document.getElementById('resetBtn').addEventListener('click', resetAll);
+    popupClose.addEventListener('click', () => {
+      popupOverlay.style.display = 'none';
+    });
+
+    // Close popup when clicking outside
+    popupOverlay.addEventListener('click', (e) => {
+      if (e.target === popupOverlay) {
+        popupOverlay.style.display = 'none';
+      }
+    });
+
+    // Close popup with Escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && popupOverlay.style.display === 'flex') {
+        popupOverlay.style.display = 'none';
+      }
+    });
+
+
+    function drawWheel() {
+      ctx.clearRect(0, 0, 400, 400);
+      
+      // Filter out companies that are full
+      const availableCompanies = companies.filter(company => assignmentCount[company] < maxTeamsPerCompany);
+      
+      if (availableCompanies.length === 0) {
+        // All companies are full
+        ctx.fillStyle = "#666";
+        ctx.font = "bold 16px Inter, Arial";
+        ctx.textAlign = "center";
+        ctx.fillText("All Companies Full!", 200, 200);
+        return;
+      }
+      
+      const arc = Math.PI * 2 / availableCompanies.length;
+      
+      for (let i = 0; i < availableCompanies.length; i++) {
+        const angle = startAngle + i * arc;
+        ctx.fillStyle = colors[i % colors.length];
+        ctx.beginPath();
+        ctx.moveTo(200, 200);
+        ctx.arc(200, 200, 200, angle, angle + arc, false);
+        ctx.lineTo(200, 200);
+        ctx.fill();
+
+        ctx.save();
+        ctx.translate(200, 200);
+        ctx.rotate(angle + arc / 2);
+        ctx.textAlign = "right";
+        ctx.fillStyle = "#111";
+        ctx.font = "bold 14px Inter, Arial";
+        ctx.fillText(availableCompanies[i], 170, 10);
+        ctx.restore();
+      }
+      // Arrow
+      ctx.fillStyle = "#fff";
+      ctx.beginPath();
+      ctx.moveTo(190, 2);
+      ctx.lineTo(210, 2);
+      ctx.lineTo(200, 25);
+      ctx.fill();
+    }
+
+    function rotateWheel() {
+      spinTime += 30;
+      if (spinTime >= spinTimeTotal) {
+        stopRotateWheel();
+        return;
+      }
+      const spinAngle = spinAngleStart - easeOut(spinTime, 0, spinAngleStart, spinTimeTotal);
+      startAngle += (spinAngle * Math.PI / 180);
+      drawWheel();
+      spinTimeout = setTimeout(rotateWheel, 30);
+    }
+
+    function easeOut(t, b, c, d) {
+      const ts = (t /= d) * t;
+      const tc = ts * t;
+      return b + c * (tc + -3 * ts + 3 * t);
+    }
+
+    function stopRotateWheel() {
+      clearTimeout(spinTimeout);
+      
+      // Filter out companies that are full
+      const availableCompanies = companies.filter(company => assignmentCount[company] < maxTeamsPerCompany);
+      
+      if (availableCompanies.length === 0) {
+        resultDiv.innerHTML = "All companies are full!";
+        spinBtn.disabled = false;
+        return;
+      }
+      
+      const degrees = startAngle * 180 / Math.PI + 90;
+      const arcd = (Math.PI * 2 / availableCompanies.length) * 180 / Math.PI;
+      const index = Math.floor((360 - (degrees % 360)) / arcd) % availableCompanies.length;
+      const selectedCompany = availableCompanies[index];
+
+      const teamObj = teams.find(t => t.name === selectedTeam);
+      if (!teamObj) return;
+
+      teamObj.assigned = selectedCompany;
+      assignmentCount[selectedCompany]++;
+      resultDiv.innerHTML = `<strong>${teamObj.name}</strong> → <strong>${selectedCompany}</strong>`;
+
+      // Save to localStorage
+      saveToLocalStorage();
+
+      // Show system alert for assignment
+      alert(`🎉 Assignment Complete!\n\n${teamObj.name} has been assigned to ${selectedCompany}`);
+      
+      // Also log to console for debugging
+      console.log(`Assignment: ${teamObj.name} → ${selectedCompany}`);
+      console.log(`Company ${selectedCompany} now has ${assignmentCount[selectedCompany]}/${maxTeamsPerCompany} teams`);
+
+      updateAssignmentTable();
+      populateTeamDropdown();
+      teamSearchInput.value = "";
+      selectedTeam = null;
+      spinBtn.disabled = false;
+    }
+
+    function spinWheel() {
+      selectedTeam = teamSearchInput.value;
+      if (!selectedTeam || !teams.find(t => t.name === selectedTeam && !t.assigned)) {
+        // --- NEW: Better validation UX ---
+        resultDiv.innerText = "Please select an unassigned team!";
+        teamSearchInput.classList.add('shake');
+        setTimeout(() => teamSearchInput.classList.remove('shake'), 500);
+        return;
+      }
+
+      spinBtn.disabled = true;
+      resultDiv.innerText = "Spinning...";
+      
+      // --- UPDATED: Faster spin time ---
+      spinAngleStart = Math.random() * 10 + 10;
+      spinTime = 0;
+      spinTimeTotal = Math.random() * 2000 + 3000; // 3-5 seconds spin
+
+      rotateWheel();
+    }
+
+    function updateAssignmentTable() {
+      // Update company slots table
+      const tbody = document.querySelector("#assignmentTable tbody");
+      tbody.innerHTML = "";
+      
+      companies.forEach(company => {
+        const assignedCount = assignmentCount[company];
+        const availableSlots = maxTeamsPerCompany - assignedCount;
+        const status = assignedCount >= maxTeamsPerCompany ? 
+          '<span style="color: #ff6b6b; font-weight: 600;">FULL</span>' : 
+          '<span style="color: #51cf66; font-weight: 600;">OPEN</span>';
+        
+        const row = `
+          <tr>
+            <td><strong>${company}</strong></td>
+            <td>${assignedCount}/${maxTeamsPerCompany}</td>
+            <td>${availableSlots} slots</td>
+            <td>${status}</td>
+          </tr>
+        `;
+        tbody.innerHTML += row;
+      });
+
+      // Update team assignments table
+      const teamTbody = document.querySelector("#teamAssignmentTable tbody");
+      teamTbody.innerHTML = "";
+      teams
+        .filter(team => team.assigned)
+        .sort((a,b) => a.name.localeCompare(b.name))
+        .forEach(team => {
+          const row = `<tr><td>${team.name}</td><td>${team.assigned}</td></tr>`;
+          teamTbody.innerHTML += row;
+        });
+    }
+
+    function exportToCSV() {
+      const assignments = teams.filter(t => t.assigned);
+      if (assignments.length === 0) {
+        resultDiv.innerText = "No assignments to export!";
+        return;
+      }
+      let csv = "Team,Assigned Company\n";
+      assignments.forEach(t => {
+        csv += `"${t.name}","${t.assigned}"\n`;
+      });
+
+      const blob = new Blob([csv], { type: "text/csv" });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `team_assignments_${new Date().toISOString().slice(0, 10)}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    }
+
+    // Function to clear localStorage (for debugging)
+    function clearLocalStorage() {
+      localStorage.removeItem('wheelTeams');
+      localStorage.removeItem('wheelAssignmentCount');
+      location.reload();
+    }
+    
+    // --- NEW: Reset function ---
+    function resetAll() {
+        if(confirm("Are you sure you want to reset all assignments?")) {
+            teams.forEach(team => team.assigned = null);
+            initializeAssignments();
+            
+            // Save to localStorage
+            saveToLocalStorage();
+            
+            // Log to console
+            console.log("All assignments have been reset");
+            console.log("All companies now have 0 teams assigned");
+            
+            updateAssignmentTable();
+            populateTeamDropdown();
+            resultDiv.innerHTML = "Assignments have been reset.";
+            teamSearchInput.value = "";
+            selectedTeam = null;
+            spinBtn.disabled = false;
+        }
+    }
+
+    // Initialize
+    loadFromLocalStorage();
+    drawWheel();
+    populateTeamDropdown();
+    updateAssignmentTable();
+  </script>
+
+</body>
+</html>
